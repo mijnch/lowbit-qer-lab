@@ -96,6 +96,7 @@ def main():
     ap.add_argument("--symmetric", action="store_true")
     ap.add_argument("--k", default="surrogate", help="split의 k: surrogate | best | 정수")
     ap.add_argument("--layers", default=r"\.layers\.\d+\.", help="압축할 nn.Linear 이름의 정규식(임베딩·lm_head 제외)")
+    ap.add_argument("--out-tag", default=None, help="결과 파일 이름 뒤에 붙일 표식(층 일부만 바꿀 때)")
     a = ap.parse_args()
 
     tok, model = load_model(a.model, a.dtype)
@@ -142,6 +143,9 @@ def main():
         if fp is not None and "rtn" in r_ and "qer" in r_ and not (fp <= r_["qer"] <= r_["rtn"]):
             print(f"※ {bits}비트: 기대한 순서(FP ≤ QER ≤ RTN)가 아니다 — 확인 필요")
     tag = re.sub(r"[^A-Za-z0-9_.-]+", "_", Path(a.model).name if Path(a.model).is_dir() else a.model)
+    if a.out_tag:
+        tag += "_" + a.out_tag
+    out["layers_pattern"] = a.layers
     save_json(f"t2_{tag}.json", out)
 
 

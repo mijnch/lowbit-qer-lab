@@ -73,9 +73,31 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 
 ### 2. perplexity (T2) — SmolLM2-135M, WikiText-2
 
-<!-- T2_SECTION_START -->
-(측정 중 — 결과가 나오면 이 절을 채웁니다)
-<!-- T2_SECTION_END -->
+`python scripts/t2_perplexity.py --model models/SmolLM2-135M --max-windows 40` (`results/t2_SmolLM2-135M.json`).
+디코더의 선형층 210개 전부를 바꾸고, WikiText-2 테스트 분할을 이어 붙여 앞 40창 × 1024 토큰(약 41k 토큰,
+분할 전체의 13%)에서 perplexity = exp(토큰당 평균 NLL). 분할의 k는 대리지표 k*(층마다 다르며 평균 16).
+
+| SmolLM2-135M | bits/weight | 가중치 오차 (층 RMS) | **perplexity** |
+|---|---:|---:|---:|
+| fp32 | 16 | 0 | **16.81** |
+| RTN 3비트 | 3.15 | 0.224 | 127.4 |
+| QER 3비트 + r | 4.14 | 0.208 | **80.9** |
+| 분할 3비트 + r (k*) | 4.14 | **0.203** | 121.1 |
+| RTN 4비트 — 같은 예산 | 4.16 | 0.104 | **22.7** |
+| QER 4비트 + r | 5.15 | 0.097 | **21.7** |
+| 분할 4비트 + r (k*) | 5.15 | **0.095** | 22.7 |
+| RTN 5비트 — 같은 예산 | 5.16 | 0.051 | **18.1** |
+
+- **같은 예산에서는 perplexity에서도 "한 비트 더"가 이깁니다.** 4비트 RTN 22.7 대 3비트 + 랭크 80.9/121.1,
+  5비트 RTN 18.1 대 4비트 + 랭크 21.7/22.7. 이 크기의 모델에서는 저랭크 항에 1비트를 쓰는 것보다 정수에
+  쓰는 편이 낫습니다(T1의 프로베니우스 결론과 같음).
+- **가중치 오차와 perplexity의 순위가 뒤집힙니다.** 분할이 가중치 오차는 더 낮은데(0.203 대 0.208),
+  perplexity는 QER이 훨씬 낫습니다(3비트 80.9 대 121.1, 4비트 21.7 대 22.7). 층 하나씩 실제 활성값 X로 잰
+  출력 오차 ‖X(W − Ŵ)ᵀ‖/‖XWᵀ‖ 로도 분할이 QER보다 낮습니다(`scripts/t2_output_error.py`, 층 0·15·29의
+  21개 행렬 중 18개). 즉 **행렬 하나의 오차(가중치든 출력이든)로는 210개 층을 동시에 바꿨을 때의
+  perplexity를 예측할 수 없고**, 층 사이의 누적·전파가 결과를 정합니다 — int8-quant-lab에서 특정 층의
+  오차만 뒤쪽 망에서 증폭되던 것과 같은 종류의 현상입니다. 왜 "양자화 뒤 복원"(QER)이 누적에 강한지는
+  열린 질문입니다(docs/notes.md).
 
 ### 3. 합성 행렬 — 파이프라인 점검
 
@@ -99,7 +121,7 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 | 측정함 | 측정하지 않음 |
 |---|---|
 | 실제 가중치 T1: SmolLM2-135M 층 5개, TinyLlama-1.1B 층 2개, 선형층 7종 × 3·4비트 (98행) | 두 모델의 나머지 층, 더 큰 모델 — TinyLlama는 층 0·11만, k는 8 간격으로 잼 |
-| perplexity T2: SmolLM2-135M, WikiText-2 테스트 분할 **앞 40창 × 1024 토큰**(약 41k 토큰) | 테스트 분할 전체(298창), TinyLlama의 perplexity(CPU 시간) |
+| perplexity T2: SmolLM2-135M, WikiText-2 테스트 분할 **앞 40창 × 1024 토큰**(약 41k 토큰) · 층 출력 오차(실제 활성값 4창, 층 0·15·29) | 테스트 분할 전체(298창), TinyLlama의 perplexity(CPU 시간), 분할의 k를 전수 탐색으로 고른 perplexity |
 | 합성 행렬 4종 × 시드 3개, 대리지표의 후회(전수 탐색 대비) | 활성값 스케일 S ≠ I, MXINT 양자화기, 학습(QPEFT, T3), 과제 정확도 |
 | Eckart–Young, k = 0 ↔ QER 일치, 양 끝값, RTN 오차 한계·그룹 독립성, 비트 예산, safetensors 읽기 (테스트 58개) | 지연시간·메모리 — 전부 fake quantization(역양자화한 float)으로 잰 것 |
 
@@ -154,7 +176,8 @@ scripts/
   t1_layer_curve.py     행렬 하나의 곡선·그림 (--k-step: 큰 행렬은 k를 띄엄띄엄)
   t1_model_summary.py   safetensors의 여러 층·행렬 요약 표 (행마다 저장)
   t1_summary.py         합성 4종 × 시드 요약 표
-  t2_perplexity.py      모든 디코더 선형층 + WikiText-2 perplexity
+  t2_perplexity.py      모든 디코더 선형층 + WikiText-2 perplexity (--layers 정규식으로 일부 층만도 가능)
+  t2_output_error.py    실제 활성값으로 층 하나의 출력 오차 ‖X(W − Ŵ)ᵀ‖/‖XWᵀ‖
   _common.py            safetensors 읽기(torch 불필요, bf16 포함), 결과 저장
 tests/        58개
 results/      t1_*.json, t2_*.json, figures/
