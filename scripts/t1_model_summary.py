@@ -58,12 +58,12 @@ def main():
                 for key in ("curve_rel_loss", "curve_rel_quant_error", "surrogate", "curve_k"):
                     row.pop(key)
                 out["rows"].append({**base, **row})
+                save_json(f"t1_{a.tag}.json", out)        # 행마다 저장 — 중간에 끊겨도 결과가 남는다
                 e = row["rel_error"]
                 print(f"L{layer:<2d} {proj:9s} {m}×{n} r={r:<3d} ρ_r={base['rho_r']:.3f} {bits}비트: "
                       f"RTN {e['rtn']:.4f} QER {e['qer_k0']:.4f} 분할 {e['split_best']:.4f}(k={row['k_best']}) "
                       f"대리 {e['split_surrogate']:.4f}(k*={row['k_surrogate']}) regret {100 * row['surrogate_regret']:.2f}% "
                       f"| {hi}비트 RTN {row['rtn_same_budget_rel_error']:.4f}  {time.time() - t:.0f}s", flush=True)
-    save_json(f"t1_{a.tag}.json", out)
     table(out)
 
 

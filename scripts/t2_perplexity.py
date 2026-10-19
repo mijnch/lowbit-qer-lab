@@ -16,6 +16,7 @@ import argparse
 import math
 import re
 import time
+from pathlib import Path
 
 import numpy as np
 
@@ -83,7 +84,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="HuggingFaceTB/SmolLM2-135M")
     ap.add_argument("--dtype", default="float32")
-    ap.add_argument("--dataset", default="wikitext")
+    ap.add_argument("--dataset", default="Salesforce/wikitext")
     ap.add_argument("--config", default="wikitext-2-raw-v1")
     ap.add_argument("--split", default="test")
     ap.add_argument("--seq-len", type=int, default=1024)
@@ -140,7 +141,7 @@ def main():
         r_ = {r["method"]: r["perplexity"] for r in out["rows"] if r["bits"] == bits}
         if fp is not None and "rtn" in r_ and "qer" in r_ and not (fp <= r_["qer"] <= r_["rtn"]):
             print(f"※ {bits}비트: 기대한 순서(FP ≤ QER ≤ RTN)가 아니다 — 확인 필요")
-    tag = re.sub(r"[^A-Za-z0-9_.-]+", "_", a.model)
+    tag = re.sub(r"[^A-Za-z0-9_.-]+", "_", Path(a.model).name if Path(a.model).is_dir() else a.model)
     save_json(f"t2_{tag}.json", out)
 
 
