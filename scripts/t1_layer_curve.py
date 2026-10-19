@@ -69,13 +69,14 @@ def main():
     ap.add_argument("--group", type=int, default=128)
     ap.add_argument("--symmetric", action="store_true")
     ap.add_argument("--k-step", type=int, default=1, help="큰 행렬에서 L(k)를 k_step 간격으로만 잰다")
+    ap.add_argument("--name", default=None, help="결과 파일 이름에 쓸 짧은 이름(없으면 가중치 지정에서 만든다)")
     ap.add_argument("--no-figure", action="store_true")
     a = ap.parse_args()
 
     name, w = load_weight(a.weight)
     m, n = w.shape
     r = a.rank if a.rank is not None else rank_for_extra_bits(a.extra_bits, m, n)
-    tag = re.sub(r"[^A-Za-z0-9_.-]+", "_", name)
+    tag = re.sub(r"[^A-Za-z0-9_.-]+", "_", a.name or name)
     s = singular_values(w)
     out = {"weight": name, "shape": [m, n], "rank": r,
            "spectrum": {"top8": s[:8].tolist(), "rho_curve_at": {str(p): float(rho_curve(s=s)[p]) for p in (1, 4, 16, 64, 256) if p < len(s)}},
