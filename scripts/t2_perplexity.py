@@ -94,7 +94,7 @@ def main():
     ap.add_argument("--extra-bits", type=float, default=1.0)
     ap.add_argument("--group", type=int, default=128)
     ap.add_argument("--symmetric", action="store_true")
-    ap.add_argument("--k", default="surrogate", help="split의 k: surrogate | best | 정수")
+    ap.add_argument("--k", default="surrogate", help="split의 k: surrogate | best | rho | 정수")
     ap.add_argument("--layers", default=r"\.layers\.\d+\.", help="압축할 nn.Linear 이름의 정규식(임베딩·lm_head 제외)")
     ap.add_argument("--out-tag", default=None, help="결과 파일 이름 뒤에 붙일 표식(층 일부만 바꿀 때)")
     a = ap.parse_args()
@@ -109,7 +109,7 @@ def main():
     out = {"model": a.model, "dataset": f"{a.dataset}/{a.config}/{a.split}", "seq_len": a.seq_len,
            "windows": int(len(windows)), "tokens_in_split": int(total_tokens), "layers": len(linears),
            "group": a.group, "symmetric": a.symmetric, "extra_bits": a.extra_bits, "k": a.k, "rows": []}
-    k = a.k if a.k in ("surrogate", "best") else int(a.k)
+    k = a.k if a.k in ("surrogate", "best", "rho") else int(a.k)
     configs = [("fp", None)] if "fp" in a.methods else []
     for bits in a.bits:
         for method in a.methods:

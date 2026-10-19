@@ -43,3 +43,12 @@ def test_split_surrogate_and_explicit_k(w):
 def test_rank_from_budget(w):
     _, info = compress_matrix(w, "qer", bits=3, extra_bits=1.0)
     assert info["rank"] == int(1.0 * 64 * 256 // (16 * (64 + 256)))
+
+
+def test_split_rho_rule_picks_all_or_nothing(w):
+    from qer.lowrank import rho
+    _, info = compress_matrix(w, "split", bits=3, rank=8, k="rho", rho_threshold=0.5)
+    assert info["k"] == (8 if rho(w, 8) < 0.5 else 0)
+    _, lo = compress_matrix(w, "split", bits=3, rank=8, k="rho", rho_threshold=0.0)   # 아무것도 보존하지 않음
+    _, hi = compress_matrix(w, "split", bits=3, rank=8, k="rho", rho_threshold=1.1)   # 전부 보존
+    assert lo["k"] == 0 and hi["k"] == 8
