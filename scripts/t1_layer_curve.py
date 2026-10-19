@@ -118,7 +118,7 @@ def figure(out, tag):
         ax.axvline(row["k_best"], color="C0", alpha=0.3)
         ax.axvline(row["k_surrogate"], color="C1", alpha=0.6, ls="-.", label=f"surrogate k*={row['k_surrogate']}")
         ax2 = ax.twinx()
-        ax2.plot(k, row["surrogate"], color="C1", alpha=0.5, lw=1)
+        ax2.plot(range(len(row["surrogate"])), row["surrogate"], color="C1", alpha=0.5, lw=1)   # 대리지표는 항상 모든 k
         ax2.set_ylabel("surrogate ρ_k(W)·ρ_(r−k)(E)", color="C1", fontsize=8)
         ax.set_xlabel("k (preserved rank)  —  r − k restored")
         ax.set_ylabel("relative Frobenius error")
