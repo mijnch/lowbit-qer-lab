@@ -20,26 +20,37 @@ from qer.lowrank import rho_curve, singular_values
 from qer.split import rtn_loss, split_loss_curve, surrogate_curve
 
 
-def analyse(w, bits, r, group, symmetric):
+def analyse(w, bits, r, group, symmetric, k_step=1):
+    """k_step > 1이면 L(k)를 k = 0, k_step, 2·k_step, …, r 에서만 잰다(큰 행렬용). 대리지표는 항상 모든 k.
+    그 경우 '최적 k'는 그 격자 위의 최적이고, 대리지표가 고른 k*의 손실은 따로 한 번 더 잰다."""
     m, n = w.shape
     wnorm = float(np.linalg.norm(w))
     t = time.time()
-    curve = split_loss_curve(w, bits, r, group, symmetric)
+    ks = sorted(set(range(0, r + 1, k_step)) | {r})
+    curve = split_loss_curve(w, bits, r, group, symmetric, ks=ks)
     sur = surrogate_curve(w, bits, r, group, symmetric)
-    k_best = int(np.argmin(curve["loss"]))
+    k_best = ks[int(np.argmin(curve["loss"]))]
     k_star = sur["k_star"]
+    if k_star in ks:
+        loss_star = curve["loss"][ks.index(k_star)]
+    else:
+        loss_star = split_loss_curve(w, bits, r, group, symmetric, ks=[k_star])["loss"][0]
+    loss_best = min(curve["loss"])
+    if loss_star < loss_best:            # 격자 밖의 k*가 더 좋으면 그것이 아는 한 최적
+        k_best, loss_best = k_star, loss_star
     row = {
         "bits": bits, "rank": r, "group": group, "symmetric": symmetric,
         "bits_per_weight": bits_per_weight(bits, m, n, r, group, symmetric),
+        "k_step": k_step,
         "rel_error": {                                   # ‖W − Ŵ‖_F / ‖W‖_F
             "rtn": rtn_loss(w, bits, group, symmetric) / wnorm,
             "qer_k0": curve["loss"][0] / wnorm,
-            "split_best": curve["loss"][k_best] / wnorm,
-            "split_surrogate": curve["loss"][k_star] / wnorm,
-            "split_k_eq_r": curve["loss"][r] / wnorm,
+            "split_best": loss_best / wnorm,
+            "split_surrogate": loss_star / wnorm,
+            "split_k_eq_r": curve["loss"][-1] / wnorm,
         },
         "k_best": k_best, "k_surrogate": k_star,
-        "surrogate_regret": curve["loss"][k_star] / curve["loss"][k_best] - 1.0,
+        "surrogate_regret": loss_star / loss_best - 1.0,
         "curve_k": curve["k"],
         "curve_rel_loss": [v / wnorm for v in curve["loss"]],
         "curve_rel_quant_error": [v / wnorm for v in curve["quant_error"]],
@@ -57,6 +68,7 @@ def main():
     ap.add_argument("--extra-bits", type=float, default=1.0, help="--rank이 없을 때 랭크를 정하는 추가 비트 예산")
     ap.add_argument("--group", type=int, default=128)
     ap.add_argument("--symmetric", action="store_true")
+    ap.add_argument("--k-step", type=int, default=1, help="큰 행렬에서 L(k)를 k_step 간격으로만 잰다")
     ap.add_argument("--no-figure", action="store_true")
     a = ap.parse_args()
 
@@ -70,7 +82,7 @@ def main():
            "rows": []}
     print(f"{name}  {m}×{n}  r={r}  ρ_r(W)={rho_curve(s=s)[r]:.3f}")
     for bits in a.bits:
-        row = analyse(w, bits, r, a.group, a.symmetric)
+        row = analyse(w, bits, r, a.group, a.symmetric, a.k_step)
         out["rows"].append(row)
         # 같은 예산의 상대: (bits + extra)비트 RTN
         hi = bits + int(round(a.extra_bits)) if a.rank is None else None
