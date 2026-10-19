@@ -17,7 +17,7 @@
 > 차이는 [docs/notes.md](docs/notes.md)에 표로 적었습니다. 수치를 논문 표와 비교하면 안 됩니다.
 
 > **코드와 문서는 AI 코딩 도구(Claude Code)가 작성했습니다.** 주제·범위·정직성 원칙은 제가 정했고,
-> 구현·테스트·측정·본문은 제 요청에 따라 Claude Code가 수행했습니다. 모든 주장은 테스트(58개)와
+> 구현·테스트·측정·본문은 제 요청에 따라 Claude Code가 수행했습니다. 모든 주장은 테스트(59개)와
 > 다시 돌릴 수 있는 스크립트로 확인할 수 있게 했습니다.
 
 ## 결과
@@ -96,8 +96,14 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
   출력 오차 ‖X(W − Ŵ)ᵀ‖/‖XWᵀ‖ 로도 분할이 QER보다 낮습니다(`scripts/t2_output_error.py`, 층 0·15·29의
   21개 행렬 중 18개). 즉 **행렬 하나의 오차(가중치든 출력이든)로는 210개 층을 동시에 바꿨을 때의
   perplexity를 예측할 수 없고**, 층 사이의 누적·전파가 결과를 정합니다 — int8-quant-lab에서 특정 층의
-  오차만 뒤쪽 망에서 증폭되던 것과 같은 종류의 현상입니다. 왜 "양자화 뒤 복원"(QER)이 누적에 강한지는
-  열린 질문입니다(docs/notes.md).
+  오차만 뒤쪽 망에서 증폭되던 것과 같은 종류의 현상입니다.
+- **차이는 MLP에서 납니다.** 3비트 QER 대 분할을 층 일부에만 적용하면(`--layers`): 층 0만 17.59 대
+  17.51(분할이 근소하게 나음), 어텐션 120개만 26.12 대 26.46, **MLP 90개만 38.93 대 47.58**, 전부 80.9 대
+  121.1. ρ_r(W)가 낮은 첫 층 q/k(0.30·0.37)는 "보존"이 perplexity에서도 이기고, ρ_r이 0.8 이상인
+  gate/up/down에서는 가중치 오차로는 분할이 근소하게 나아도 perplexity는 "복원"(QER)이 훨씬 낫습니다.
+  즉 가중치 오차로 고른 k(거의 항상 k = r)는 ρ_r이 높은 층에서 틀린 선택입니다.
+  <!-- RHO_RULE -->
+  왜 복원 항이 — 걷어내는 오차 에너지가 r/min(m,n)뿐인데도 — 누적에 강한지는 열린 질문입니다(docs/notes.md).
 
 ### 3. 합성 행렬 — 파이프라인 점검
 
@@ -123,7 +129,7 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 | 실제 가중치 T1: SmolLM2-135M 층 5개, TinyLlama-1.1B 층 2개, 선형층 7종 × 3·4비트 (98행) | 두 모델의 나머지 층, 더 큰 모델 — TinyLlama는 층 0·11만, k는 8 간격으로 잼 |
 | perplexity T2: SmolLM2-135M, WikiText-2 테스트 분할 **앞 40창 × 1024 토큰**(약 41k 토큰) · 층 출력 오차(실제 활성값 4창, 층 0·15·29) | 테스트 분할 전체(298창), TinyLlama의 perplexity(CPU 시간), 분할의 k를 전수 탐색으로 고른 perplexity |
 | 합성 행렬 4종 × 시드 3개, 대리지표의 후회(전수 탐색 대비) | 활성값 스케일 S ≠ I, MXINT 양자화기, 학습(QPEFT, T3), 과제 정확도 |
-| Eckart–Young, k = 0 ↔ QER 일치, 양 끝값, RTN 오차 한계·그룹 독립성, 비트 예산, safetensors 읽기 (테스트 58개) | 지연시간·메모리 — 전부 fake quantization(역양자화한 float)으로 잰 것 |
+| Eckart–Young, k = 0 ↔ QER 일치, 양 끝값, RTN 오차 한계·그룹 독립성, 비트 예산, safetensors 읽기 (테스트 59개) | 지연시간·메모리 — 전부 fake quantization(역양자화한 float)으로 잰 것 |
 
 ## 방법 (기호)
 
@@ -144,7 +150,7 @@ QER     Ŵ = Q + SVD_r(W − Q),  Q = Q_b(W)
 
 ```bash
 pip install -r requirements.txt
-pytest -q                                                            # 58개
+pytest -q                                                            # 59개
 python scripts/t1_summary.py --seeds 0 1 2                           # 합성 행렬 표 (약 3분)
 
 # 실제 가중치 — safetensors 파일을 받아 둔다 (models/ 는 .gitignore)
@@ -179,7 +185,7 @@ scripts/
   t2_perplexity.py      모든 디코더 선형층 + WikiText-2 perplexity (--layers 정규식으로 일부 층만도 가능)
   t2_output_error.py    실제 활성값으로 층 하나의 출력 오차 ‖X(W − Ŵ)ᵀ‖/‖XWᵀ‖
   _common.py            safetensors 읽기(torch 불필요, bf16 포함), 결과 저장
-tests/        58개
+tests/        59개
 results/      t1_*.json, t2_*.json, figures/
 docs/notes.md 논문과 다른 점, 막힌 곳, 관찰, 열린 질문
 ```
@@ -217,7 +223,7 @@ the 3-bit error drops 0.247 → 0.101, below 4-bit RTN at the same budget (0.152
 because the quantization residual is spectrally white. Surrogate regret ≤ 1.9% (SmolLM2) and ≤ 3.9%
 (TinyLlama). At equal bits per weight, plain 4-bit RTN wins everywhere except TinyLlama layer-0 q/k.
 Perplexity (T2, WikiText-2, SmolLM2-135M) is reported in the Korean section above.
-58 tests cover Eckart–Young, k = 0 ↔ QER, RTN error bounds, the bit budget and a torch-free
+59 tests cover Eckart–Young, k = 0 ↔ QER, RTN error bounds, the bit budget and a torch-free
 safetensors reader (bf16 included).
 
 Code and documentation were written by an AI coding assistant (Claude Code) at the author's request;
