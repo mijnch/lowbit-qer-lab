@@ -1,0 +1,4 @@
+# 라이브러리·테스트·T1 (합성 행렬 또는 받아 둔 safetensors 파일). torch 불필요.
+numpy>=1.26
+pytest>=8
+matplotlib>=3.8     # 그림만. --no-figure 면 없어도 된다

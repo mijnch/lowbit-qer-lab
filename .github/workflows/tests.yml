@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.13']
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r requirements.txt
+      - name: 단위 검증 (Eckart–Young, k=0 ↔ QER, RTN 오차 한계, 비트 예산, safetensors 읽기)
+        run: python -m pytest -q
+      - name: T1 연기 시험 (합성 256×256, 랭크 8)
+        run: python scripts/t1_layer_curve.py --weight synthetic:outlier:256x256:0 --bits 3 --rank 8 --no-figure

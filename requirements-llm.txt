@@ -1,0 +1,5 @@
+# T2 (실제 LLM의 perplexity) 전용. CPU용 torch는 https://download.pytorch.org/whl/cpu 에서 받는 편이 가볍다.
+-r requirements.txt
+torch>=2.4
+transformers>=4.45
+datasets>=3.0
