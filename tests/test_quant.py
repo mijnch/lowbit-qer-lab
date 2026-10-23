@@ -66,3 +66,14 @@ def test_constant_group_is_exact():
     w = np.full((2, 128), 0.37)
     assert np.allclose(rtn(w, 3), w)
     assert np.allclose(rtn(w, 3, symmetric=True), w)
+
+
+@pytest.mark.parametrize("sign", [1.0, -1.0])
+@pytest.mark.parametrize("bits", [3, 4, 8])
+def test_group_without_zero_is_not_collapsed(bits, sign):
+    # 그룹의 값이 모두 양수(또는 모두 음수)여도 한 단계로 뭉개지지 않는다 — 범위를 0 까지 넓혀 격자를 잡는다
+    w = sign * np.linspace(1.0, 2.0, 128)[None, :]
+    q = rtn(w, bits, group=128)
+    step = 2.0 / (2 ** bits - 1)                 # 범위 [0, 2] (또는 [−2, 0])
+    assert len(np.unique(q)) > 1
+    assert np.abs(w - q).max() <= step / 2 + 1e-12

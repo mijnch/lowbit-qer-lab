@@ -1,5 +1,5 @@
 {
-  "model": "/tmp/claude-0/-home-user/c40bd0fe-47dc-5e7b-91c2-108d8f88030d/scratchpad/models/SmolLM2-135M",
+  "model": "models/SmolLM2-135M",
   "dataset": "Salesforce/wikitext/wikitext-2-raw-v1/test",
   "seq_len": 1024,
   "windows": 40,
@@ -16,7 +16,7 @@
       "perplexity": 81.03593996203323,
       "nll_sum": 179839.01171875,
       "tokens": 40920,
-      "bits_per_weight_mean": 4.143229166666667,
+      "bits_per_weight_mean": 4.155598958333333,
       "rel_error_rms": 0.20793739563974378,
       "k_values": [
         18,

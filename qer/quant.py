@@ -1,7 +1,9 @@
 """RTN(round-to-nearest) 그룹 양자화기 — 가중치 행렬 W(out × in)의 각 행을 입력 축으로 g개씩 묶어
 그룹마다 scale(과 zero-point)을 둔다. 양자화 → 역양자화한 float 행렬을 돌려준다(fake quantization).
 
-비대칭(기본): q ∈ [0, 2^b − 1], scale = (max − min)/(2^b − 1), zero = round(−min/scale)
+비대칭(기본): q ∈ [0, 2^b − 1], scale = (max − min)/(2^b − 1), zero = round(−min/scale).
+  min·max 는 0 을 포함하도록 넓힌다(min ≤ 0 ≤ max) — 그래야 zero-point 가 [0, 2^b − 1] 안에 들어
+  b 비트로 저장되고(budget.py 의 가정), 0 을 포함하지 않는 그룹이 한 단계로 뭉개지지 않는다.
 대칭(narrow): q ∈ [−(2^(b−1) − 1), 2^(b−1) − 1], scale = max|w| / (2^(b−1) − 1)
 
 반올림은 np.rint(동률은 짝수 쪽, torch.round와 같음). 논문들이 쓰는 MXINT(공유 지수)와는 다르다.
@@ -34,8 +36,8 @@ def rtn(w, bits, group=128, symmetric=False):
         deq = q * scale
     else:
         qmax = 2 ** bits - 1
-        lo = g.min(axis=2, keepdims=True)
-        hi = g.max(axis=2, keepdims=True)
+        lo = np.minimum(g.min(axis=2, keepdims=True), 0.0)   # 0 을 포함하지 않는 그룹(전부 양수·음수)이
+        hi = np.maximum(g.max(axis=2, keepdims=True), 0.0)   # 한 단계로 뭉개지던 것을 막는다
         scale = (hi - lo) / qmax
         const = scale == 0                       # 그룹의 값이 전부 같으면 그대로 둔다
         scale = np.where(const, 1.0, scale)

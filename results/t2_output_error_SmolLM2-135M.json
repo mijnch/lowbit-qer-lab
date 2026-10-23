@@ -1,5 +1,5 @@
 {
-  "model": "/tmp/claude-0/-home-user/c40bd0fe-47dc-5e7b-91c2-108d8f88030d/scratchpad/models/SmolLM2-135M",
+  "model": "models/SmolLM2-135M",
   "layers": [
     0,
     15,

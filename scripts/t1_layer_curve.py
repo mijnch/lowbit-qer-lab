@@ -94,7 +94,7 @@ def main():
         print(f"  {bits}비트 r={r}: RTN {e['rtn']:.4f}  QER(k=0) {e['qer_k0']:.4f}  "
               f"분할 최적 k={row['k_best']} {e['split_best']:.4f}  대리 k*={row['k_surrogate']} {e['split_surrogate']:.4f}  "
               f"(regret {100 * row['surrogate_regret']:.2f}%)  {row['seconds']}s"
-              + (f"  | {hi}비트 RTN {row['rtn_same_budget']['rel_error']:.4f}" if hi else ""))
+              + (f"  | {hi}비트 RTN {row['rtn_same_budget']['rel_error']:.4f}" if "rtn_same_budget" in row else ""))
     save_json(f"t1_{tag}.json", out)
     if not a.no_figure:
         figure(out, tag)

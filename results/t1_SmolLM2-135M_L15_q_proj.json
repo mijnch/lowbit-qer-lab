@@ -30,7 +30,7 @@
       "rank": 18,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22639733034280196,
@@ -130,7 +130,7 @@
       "rtn_same_budget": {
         "bits": 4,
         "rel_error": 0.10569397406366722,
-        "bits_per_weight": 4.15625
+        "bits_per_weight": 4.173611111111111
       }
     },
     {
@@ -138,7 +138,7 @@
       "rank": 18,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10569397406366722,
@@ -238,7 +238,7 @@
       "rtn_same_budget": {
         "bits": 5,
         "rel_error": 0.051177720583133635,
-        "bits_per_weight": 5.1640625
+        "bits_per_weight": 5.182291666666667
       }
     }
   ]

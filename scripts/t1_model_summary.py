@@ -3,7 +3,7 @@
     python scripts/t1_model_summary.py --file models/SmolLM2-135M/model.safetensors --tag SmolLM2-135M \
         --layers 0 7 15 22 29 --bits 3 4 --extra-bits 1.0
     python scripts/t1_model_summary.py --file models/TinyLlama-1.1B-3T/model.safetensors --tag TinyLlama-1.1B \
-        --layers 0 11 --k-step 4
+        --layers 0 11 --k-step 8
 
 결과: results/t1_<tag>.json (행렬마다 한 줄) + 행렬 종류별 평균 표(stdout).
 """
@@ -12,7 +12,7 @@ import time
 
 import numpy as np
 
-from _common import read_safetensor, safetensor_names, save_json
+from _common import read_safetensor, safetensor_names, save_json, portable_path
 from qer.budget import rank_for_extra_bits
 from qer.lowrank import rho_curve, singular_values
 from qer.split import rtn_loss
@@ -34,7 +34,7 @@ def main():
     a = ap.parse_args()
 
     names = safetensor_names(a.file)
-    out = {"file": a.file, "tag": a.tag, "layers": a.layers, "extra_bits": a.extra_bits, "group": a.group,
+    out = {"file": portable_path(a.file), "tag": a.tag, "layers": a.layers, "extra_bits": a.extra_bits, "group": a.group,
            "k_step": a.k_step, "rows": []}
     for layer in a.layers:
         for proj in a.tensors:
@@ -63,7 +63,9 @@ def main():
                 print(f"L{layer:<2d} {proj:9s} {m}×{n} r={r:<3d} ρ_r={base['rho_r']:.3f} {bits}비트: "
                       f"RTN {e['rtn']:.4f} QER {e['qer_k0']:.4f} 분할 {e['split_best']:.4f}(k={row['k_best']}) "
                       f"대리 {e['split_surrogate']:.4f}(k*={row['k_surrogate']}) regret {100 * row['surrogate_regret']:.2f}% "
-                      f"| {hi}비트 RTN {row['rtn_same_budget_rel_error']:.4f}  {time.time() - t:.0f}s", flush=True)
+                      + (f"| {hi}비트 RTN {row['rtn_same_budget_rel_error']:.4f}  "
+                         if row["rtn_same_budget_rel_error"] is not None else "| 같은 예산 RTN 없음(8비트 초과)  ")
+                      + f"{time.time() - t:.0f}s", flush=True)
     table(out)
 
 
@@ -84,7 +86,8 @@ def table(out):
                   f"{np.mean([r['rho_r'] for r in sel]):.3f} | {mean('rtn'):.4f} | {mean('qer_k0'):.4f} | "
                   f"{mean('split_best'):.4f} (k={ks}) | {mean('split_surrogate'):.4f} (k*={kstars}) | "
                   f"≤{100 * max(r['surrogate_regret'] for r in sel):.2f}% | "
-                  f"{np.mean([r['rtn_same_budget_rel_error'] for r in sel]):.4f} |")
+                  + (f"{np.mean(same):.4f} |" if (same := [r['rtn_same_budget_rel_error'] for r in sel
+                                                            if r['rtn_same_budget_rel_error'] is not None]) else "— |"))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 {
-  "file": "/tmp/claude-0/-home-user/c40bd0fe-47dc-5e7b-91c2-108d8f88030d/scratchpad/models/TinyLlama-1.1B-3T/model.safetensors",
+  "file": "models/TinyLlama-1.1B-3T/model.safetensors",
   "tag": "TinyLlama-1.1B",
   "layers": [
     0,

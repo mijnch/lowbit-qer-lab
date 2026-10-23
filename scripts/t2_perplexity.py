@@ -8,11 +8,11 @@
 perplexity = exp(토큰당 평균 음의 로그우도), 테스트 분할을 이어 붙여 seq-len 길이의 겹치지 않는 창으로 잰다.
 CPU에서는 --max-windows 로 창 수를 줄인다(그 경우 전체 분할이 아니라 앞부분만 잰 것이고, JSON에 기록된다).
 
-※ 이 스크립트는 저장소를 만든 환경(모델 허브 접근 불가, torch 미설치)에서 실행하지 못했다.
-  numpy 부분(qer.apply.compress_matrix)은 테스트했고, torch·transformers·datasets 연결 부분은
-  실행 확인이 필요하다. README의 측정/미측정 표 참고.
+results/t2_SmolLM2-135M*.json 이 이 스크립트의 결과다(SmolLM2-135M, WikiText-2 테스트 분할 앞 40창 × 1024 토큰).
+TinyLlama-1.1B 는 CPU 시간 때문에 재지 않았다 — README의 측정/미측정 표 참고.
 """
 import argparse
+import importlib.metadata
 import math
 import re
 import time
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import numpy as np
 
-from _common import save_json
+from _common import save_json, portable_path
 from qer.apply import compress_matrix
 
 
@@ -71,13 +71,25 @@ def apply(linears, originals, method, **kw):
     import torch
     infos = []
     for name, mod in linears:
-        w = originals[name].numpy().astype(np.float64)
+        w = originals[name].float().numpy().astype(np.float64)   # bf16 텐서는 .numpy() 가 없다
         w_hat, info = compress_matrix(w, method, **kw)
         with torch.no_grad():
             mod.weight.copy_(torch.from_numpy(w_hat).to(mod.weight.dtype))
         info["name"] = name
         infos.append(info)
     return infos
+
+
+def environment():
+    """결과 JSON 에 남길 실행 환경. perplexity 는 torch·transformers 판에 따라 달라질 수 있다."""
+    import platform
+    env = {"python": platform.python_version(), "platform": platform.platform(), "numpy": np.__version__}
+    for name in ("torch", "transformers", "datasets"):
+        try:
+            env[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            env[name] = None
+    return env
 
 
 def main():
@@ -106,16 +118,18 @@ def main():
     numel = sum(v.numel() for v in originals.values())
     print(f"{a.model}: 선형층 {len(linears)}개, 가중치 {numel:,}개, 창 {len(windows)}×{a.seq_len} (분할 전체 토큰 {total_tokens:,})")
 
-    out = {"model": a.model, "dataset": f"{a.dataset}/{a.config}/{a.split}", "seq_len": a.seq_len,
+    out = {"model": portable_path(a.model), "dataset": f"{a.dataset}/{a.config}/{a.split}", "seq_len": a.seq_len,
            "windows": int(len(windows)), "tokens_in_split": int(total_tokens), "layers": len(linears),
-           "group": a.group, "symmetric": a.symmetric, "extra_bits": a.extra_bits, "k": a.k, "rows": []}
+           "group": a.group, "symmetric": a.symmetric, "extra_bits": a.extra_bits, "k": a.k,
+           "env": environment(), "rows": []}
     k = a.k if a.k in ("surrogate", "best", "rho") else int(a.k)
     configs = [("fp", None)] if "fp" in a.methods else []
     for bits in a.bits:
         for method in a.methods:
             if method == "fp":
                 continue
-            configs.append((method, bits))
+            if (method, bits) not in configs:      # 앞 비트의 '같은 예산 RTN' 과 겹치면 한 번만
+                configs.append((method, bits))
         hi = bits + int(round(a.extra_bits))
         if "rtn" in a.methods and hi <= 8 and ("rtn", hi) not in configs:
             configs.append(("rtn", hi))                      # 같은 예산의 상대
