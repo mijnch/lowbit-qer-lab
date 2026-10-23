@@ -168,6 +168,7 @@ python scripts/t1_layer_curve.py --weight models/SmolLM2-135M/model.safetensors:
 
 # perplexity — torch·transformers·datasets 필요. --model 에는 config·tokenizer까지 받아 둔 디렉터리나 HF 이름
 pip install -r requirements-llm.txt
+# 이 저장소의 T2 결과는 torch 2.14.1+cpu · transformers 5.20.1 · datasets 5.1.0 · Python 3.11.15, CPU 4개(GPU 없음)에서 만들었다
 python scripts/t2_perplexity.py --model models/SmolLM2-135M --methods fp rtn qer split --bits 3 4 --max-windows 40
 ```
 

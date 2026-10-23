@@ -65,7 +65,16 @@
   작아 보여도 90~210층에서는 크다; (ii) 분할은 W − P_k를 양자화하므로 양자화 격자가 W의 주성분과 어긋나
   오차의 방향이 P_k와 상관되고, 그것이 다음 층의 입력 분포를 체계적으로 바꾼다. 둘 다 재지 않았다.
 
-- **실행 환경을 적지 않았다.** `results/t2_*.json` 을 만들 때는 python·torch·transformers 판을 기록하지 않았다. perplexity 는 라이브러리 판에 따라 달라질 수 있으므로, 위 수치를 다시 만들 때 같은 판인지 확인할 길이 없다. `scripts/t2_perplexity.py` 는 이제 `env`(python·platform·numpy·torch·transformers·datasets 판)를 결과 JSON 에 함께 적는다. 이후 실행부터는 이 문제가 없다.
+- **실행 환경은 나중에 적었다.** `results/t2_*.json` 6개(2026-10-19)를 만들 때는 스크립트가 실행 환경을 기록하지 않았다.
+  실행한 사람이 2026-10-23 에 알려 준 환경은 아래와 같고, 같은 값을 각 결과 JSON 의 `env` 에 적었다(`env_source` 에
+  나중에 받은 값임을 밝힘). 실행 당시 잰 값이 아니고, 6개가 모두 이 환경에서 나왔다는 것도 같은 날 12분 안에
+  커밋됐다는 데서 미루어 본 것이다. perplexity 는 라이브러리 판에 따라 달라질 수 있으므로 다시 만들 때는 이 판을 맞춘다.
+  - torch 2.14.1+cpu(CPU 전용 빌드, download.pytorch.org/whl/cpu) · transformers 5.20.1 · datasets 5.1.0 ·
+    numpy 2.4.6 · safetensors 0.8.0 · Python 3.11.15
+  - Linux x86-64, Intel Xeon 2.10GHz, CPU 4개, GPU 없음
+
+  `scripts/t2_perplexity.py`·`scripts/t2_output_error.py` 는 이제 `env`(python·platform·numpy·torch·transformers·
+  datasets·safetensors 판)를 결과 JSON 에 스스로 적는다.
 
 ## 관찰 — 합성 행렬 (`results/t1_synthetic_summary.json`)
 

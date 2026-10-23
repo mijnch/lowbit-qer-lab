@@ -9,6 +9,16 @@
   "symmetric": false,
   "extra_bits": 1.0,
   "k": "rho",
+  "env": {
+    "python": "3.11.15",
+    "platform": "Linux x86-64 · Intel Xeon 2.10GHz · CPU 4개 · GPU 없음",
+    "numpy": "2.4.6",
+    "torch": "2.14.1+cpu",
+    "transformers": "5.20.1",
+    "datasets": "5.1.0",
+    "safetensors": "0.8.0"
+  },
+  "env_source": "실행 뒤 실행자가 알려 준 값(2026-10-23 기록). 실행 당시 스크립트가 잰 값이 아니다.",
   "rows": [
     {
       "method": "split",
