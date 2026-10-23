@@ -1,5 +1,6 @@
 """스크립트 공통: 저장소 경로, 결과 JSON, 가중치 읽기(safetensors / 합성)."""
 import json
+import os
 import struct
 import sys
 from pathlib import Path
@@ -13,10 +14,30 @@ FIGURES = RESULTS / "figures"
 
 
 def save_json(name, obj):
+    """임시 파일에 다 쓴 뒤 바꿔치기한다 — 쓰는 도중 끊겨도(시간 제한·Ctrl+C) 이전 결과가 남는다."""
     RESULTS.mkdir(exist_ok=True)
     path = RESULTS / name
-    path.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
     print(f"→ {path.relative_to(ROOT)}")
+
+
+def portable_path(p):
+    """결과 JSON 에 남길 모델 경로. 실행한 기계의 임시 폴더 이름이 결과에 남지 않게 한다.
+
+    저장소 안이면 저장소 기준 상대 경로, 밖이면 'models' 폴더부터(없으면 마지막 이름만).
+    경로가 아닌 값(HF 저장소 이름 'org/model')은 그대로.
+    """
+    q = Path(p)
+    if not q.exists():
+        return str(p)
+    q = q.resolve()
+    try:
+        return q.relative_to(ROOT).as_posix()
+    except ValueError:
+        parts = q.parts
+        return "/".join(parts[parts.index("models"):]) if "models" in parts else q.name
 
 
 def load_weight(spec):

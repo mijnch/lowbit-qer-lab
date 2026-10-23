@@ -1,5 +1,5 @@
 {
-  "model": "/tmp/claude-0/-home-user/c40bd0fe-47dc-5e7b-91c2-108d8f88030d/scratchpad/models/SmolLM2-135M",
+  "model": "models/SmolLM2-135M",
   "dataset": "Salesforce/wikitext/wikitext-2-raw-v1/test",
   "seq_len": 1024,
   "windows": 40,
@@ -27,7 +27,7 @@
       "perplexity": 127.3623970902389,
       "nll_sum": 198340.7353515625,
       "tokens": 40920,
-      "bits_per_weight_mean": 3.1484375,
+      "bits_per_weight_mean": 3.1608072916666665,
       "rel_error_rms": 0.22349030170681788,
       "k_values": null,
       "seconds": 686.1
@@ -38,7 +38,7 @@
       "perplexity": 80.92682443229296,
       "nll_sum": 179783.87548828125,
       "tokens": 40920,
-      "bits_per_weight_mean": 4.143229166666667,
+      "bits_per_weight_mean": 4.155598958333333,
       "rel_error_rms": 0.20821866917121223,
       "k_values": null,
       "seconds": 294.1
@@ -49,7 +49,7 @@
       "perplexity": 121.07771130389061,
       "nll_sum": 196270.02124023438,
       "tokens": 40920,
-      "bits_per_weight_mean": 4.143229166666667,
+      "bits_per_weight_mean": 4.155598958333333,
       "rel_error_rms": 0.20245458009974576,
       "k_values": [
         18,
@@ -271,21 +271,10 @@
       "perplexity": 22.694010452024106,
       "nll_sum": 127756.37426757812,
       "tokens": 40920,
-      "bits_per_weight_mean": 4.15625,
+      "bits_per_weight_mean": 4.169270833333333,
       "rel_error_rms": 0.10444603581704948,
       "k_values": null,
       "seconds": 128.8
-    },
-    {
-      "method": "rtn",
-      "bits": 4,
-      "perplexity": 22.694010452024106,
-      "nll_sum": 127756.37426757812,
-      "tokens": 40920,
-      "bits_per_weight_mean": 4.15625,
-      "rel_error_rms": 0.10444603581704948,
-      "k_values": null,
-      "seconds": 125.4
     },
     {
       "method": "qer",
@@ -293,7 +282,7 @@
       "perplexity": 21.73954289962819,
       "nll_sum": 125998.11645507812,
       "tokens": 40920,
-      "bits_per_weight_mean": 5.151041666666667,
+      "bits_per_weight_mean": 5.1640625,
       "rel_error_rms": 0.09726005051424483,
       "k_values": null,
       "seconds": 64.4
@@ -304,7 +293,7 @@
       "perplexity": 22.675558190318455,
       "nll_sum": 127723.08911132812,
       "tokens": 40920,
-      "bits_per_weight_mean": 5.151041666666667,
+      "bits_per_weight_mean": 5.1640625,
       "rel_error_rms": 0.09456561172791371,
       "k_values": [
         18,
@@ -526,7 +515,7 @@
       "perplexity": 18.06163220044805,
       "nll_sum": 118413.88354492188,
       "tokens": 40920,
-      "bits_per_weight_mean": 5.1640625,
+      "bits_per_weight_mean": 5.177734375,
       "rel_error_rms": 0.050555794759519206,
       "k_values": null,
       "seconds": 43.2

@@ -1,5 +1,5 @@
 {
-  "model": "/tmp/claude-0/-home-user/c40bd0fe-47dc-5e7b-91c2-108d8f88030d/scratchpad/models/SmolLM2-135M",
+  "model": "models/SmolLM2-135M",
   "dataset": "Salesforce/wikitext/wikitext-2-raw-v1/test",
   "seq_len": 1024,
   "windows": 40,
@@ -16,7 +16,7 @@
       "perplexity": 17.592005249913086,
       "nll_sum": 117335.8310546875,
       "tokens": 40920,
-      "bits_per_weight_mean": 4.143229166666667,
+      "bits_per_weight_mean": 4.155598958333333,
       "rel_error_rms": 0.20998734068550914,
       "k_values": null,
       "seconds": 38.1
@@ -27,7 +27,7 @@
       "perplexity": 17.510307458882455,
       "nll_sum": 117145.35473632812,
       "tokens": 40920,
-      "bits_per_weight_mean": 4.143229166666667,
+      "bits_per_weight_mean": 4.155598958333333,
       "rel_error_rms": 0.1928824628225312,
       "k_values": [
         18,

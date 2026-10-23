@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from _common import save_json
+from _common import save_json, portable_path
 from qer.apply import compress_matrix
 from t2_perplexity import load_model, load_windows, target_linears
 
@@ -43,7 +43,7 @@ def main():
     for h in hooks:
         h.remove()
 
-    out = {"model": a.model, "layers": a.layers, "windows": int(len(windows)), "seq_len": a.seq_len, "rows": []}
+    out = {"model": portable_path(a.model), "layers": a.layers, "windows": int(len(windows)), "seq_len": a.seq_len, "rows": []}
     print("| 층 | 행렬 | 비트 | 방법 | 가중치 오차 | 출력 오차 | k |")
     for name, mod in linears:
         x = np.concatenate(inputs[name]).astype(np.float64)        # (토큰 수, in)
@@ -72,11 +72,15 @@ def summary(out):
             if sel:
                 print(f"{bits}비트 {method:5s} 가중치 오차 평균 {np.mean([r['weight_rel_error'] for r in sel]):.4f}  "
                       f"출력 오차 평균 {np.mean([r['output_rel_error'] for r in sel]):.4f}")
-        names = sorted({r["name"] for r in rows})
-        wins = sum(1 for n in names
-                   if next(r for r in rows if r["name"] == n and r["bits"] == bits and r["method"] == "qer")["output_rel_error"]
-                   < next(r for r in rows if r["name"] == n and r["bits"] == bits and r["method"] == "split")["output_rel_error"])
-        print(f"{bits}비트: 출력 오차에서 QER < 분할 인 행렬 {wins}/{len(names)}")
+        by = {(r["name"], r["method"]): r["output_rel_error"] for r in rows if r["bits"] == bits}
+        pairs = [(by[n, "qer"], by[n, "split"]) for n in sorted({r["name"] for r in rows})
+                 if (n, "qer") in by and (n, "split") in by]
+        if not pairs:            # --methods 에 qer·split 이 함께 없으면 비교하지 않는다
+            continue
+        lower = sum(1 for q, s in pairs if s < q)
+        same = sum(1 for q, s in pairs if s == q)      # k* = 0 이면 분할 = QER
+        print(f"{bits}비트: 출력 오차에서 분할 < QER 인 행렬 {lower}/{len(pairs)} "
+              f"(같음 {same}, QER < 분할 {len(pairs) - lower - same})")
 
 
 if __name__ == "__main__":

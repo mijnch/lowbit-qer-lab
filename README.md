@@ -2,6 +2,7 @@
 
 [![tests](https://github.com/mijnch/lowbit-qer-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/mijnch/lowbit-qer-lab/actions/workflows/tests.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![python](https://img.shields.io/badge/python-3.11%20%7C%203.13-blue.svg)
 
 가중치 행렬 W를 저비트 정수 행렬 Q와 저랭크 항 LR의 합 **W ≈ Q + LR** 로 나타내는 방법을 numpy로
 단순화해 구현하고, 작은 LLM 두 개의 실제 가중치에서 세 가지를 확인합니다.
@@ -17,18 +18,19 @@
 > 차이는 [docs/notes.md](docs/notes.md)에 표로 적었습니다. 수치를 논문 표와 비교하면 안 됩니다.
 
 > **코드와 문서는 AI 코딩 도구(Claude Code)가 작성했습니다.** 주제·범위·정직성 원칙은 제가 정했고,
-> 구현·테스트·측정·본문은 제 요청에 따라 Claude Code가 수행했습니다. 모든 주장은 테스트(59개)와
+> 구현·테스트·측정·본문은 제 요청에 따라 Claude Code가 수행했습니다. 모든 주장은 테스트(67개)와
 > 다시 돌릴 수 있는 스크립트로 확인할 수 있게 했습니다.
 
 ## 결과
 
 설정은 모두 같습니다: 그룹 128 비대칭 RTN, 랭크 r은 16비트 인자 기준 **가중치당 +1.0비트**
 (2048×2048이면 r = 64, 576×576이면 r = 18), 오차는 ‖W − Ŵ‖_F/‖W‖_F. "같은 예산 RTN"은 한 비트 더 쓴
-RTN(3비트 + r ≈ 4.15 bits/weight 대 4비트 RTN ≈ 4.16).
+RTN(2048×2048에서 3비트 + r ≈ 4.15 bits/weight 대 4비트 RTN ≈ 4.16. 576폭 행렬은 그룹이 행마다 5개라
+4.16 대 4.17).
 
 ### 1. 가중치 오차 (T1) — SmolLM2-135M, TinyLlama-1.1B
 
-`python scripts/t1_model_summary.py` (`results/t1_SmolLM2-135M.json`, `results/t1_TinyLlama-1.1B.json`).
+`scripts/t1_model_summary.py` (`results/t1_SmolLM2-135M.json`, `results/t1_TinyLlama-1.1B.json` — 명령은 아래 「재현 방법」).
 SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)는 층 0·11의 선형층 7종 전부.
 표는 3비트, 층 평균. ρ_r(W)는 W에서 상위 r개 성분을 빼고 남는 에너지 비율(작을수록 보존할 구조가 많다).
 
@@ -57,13 +59,13 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 읽는 법 (자세한 것은 [docs/notes.md](docs/notes.md)):
 
 - **분할의 이득은 ρ_r(W) 하나로 거의 결정됩니다.** QER 대비 분할의 오차 감소율과 ρ_r(W)의 상관이
-  SmolLM2 −0.97, TinyLlama −0.98입니다. ρ_r이 0.14~0.37인 첫 층 q/k에서는 오차가 41~61% 줄고
-  (TinyLlama 층 0 q_proj: 0.247 → 0.101), ρ_r ≥ 0.8인 v/up/down에서는 0~3%로 QER과 같습니다.
+  SmolLM2 −0.97, TinyLlama −0.98입니다. ρ_r이 0.14~0.37인 첫 층 q/k에서는 오차가 30~61% 줄고
+  (TinyLlama 층 0 q_proj: 0.247 → 0.101), ρ_r ≥ 0.8인 v/up/down에서는 0~4.4%로 QER과 거의 같습니다.
 - **최적 k는 거의 항상 k = r — 전부 보존하고 복원은 하지 않는 쪽입니다.** TinyLlama 28/28행,
   SmolLM2 70행 중 44행(51행은 k ≥ 0.9r). 양자화 잔차 E_k의 스펙트럼이 백색잡음에 가까워서
   랭크 r−k의 복원 항이 걷어 내는 에너지가 (r−k)/min(m,n) 수준에 그치기 때문입니다. 이 설정(S = I)에서는
   "양자화 뒤 복원"보다 "양자화 전 보존"이 예산을 훨씬 잘 씁니다.
-- **대리지표의 후회는 SmolLM2 ≤1.9%, TinyLlama ≤3.9%**(층 0 o_proj에서 k*=42 대 최적 64).
+- **대리지표의 후회는 SmolLM2 ≤1.9%, TinyLlama ≤3.9%**(층 0 o_proj에서 k* 41~42 대 최적 64).
   고른 k*가 다를 때도 손실 곡선이 그 구간에서 평평해 차이가 작습니다.
 - **같은 비트 예산에서는 대개 4비트 RTN이 이깁니다**(가중치 오차 기준). 분할이 이긴 곳은 TinyLlama
   층 0의 q_proj·k_proj(0.101 대 0.152, 0.128 대 0.164)뿐이고, SmolLM2에서는 한 곳도 없습니다
@@ -80,14 +82,14 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 | SmolLM2-135M | bits/weight | 가중치 오차 (층 RMS) | **perplexity** |
 |---|---:|---:|---:|
 | fp32 | 16 | 0 | **16.81** |
-| RTN 3비트 | 3.15 | 0.224 | 127.4 |
-| QER 3비트 + r | 4.14 | 0.208 | **80.9** |
-| 분할 3비트 + r (k*) | 4.14 | **0.203** | 121.1 |
-| 분할 3비트 + r (ρ 규칙: 2개만 보존) | 4.14 | 0.208 | 81.0 |
-| RTN 4비트 — 같은 예산 | 4.16 | 0.104 | **22.7** |
-| QER 4비트 + r | 5.15 | 0.097 | **21.7** |
-| 분할 4비트 + r (k*) | 5.15 | **0.095** | 22.7 |
-| RTN 5비트 — 같은 예산 | 5.16 | 0.051 | **18.1** |
+| RTN 3비트 | 3.16 | 0.224 | 127.4 |
+| QER 3비트 + r | 4.16 | 0.208 | **80.9** |
+| 분할 3비트 + r (k*) | 4.16 | **0.203** | 121.1 |
+| 분할 3비트 + r (ρ 규칙: 2개만 보존) | 4.16 | 0.208 | 81.0 |
+| RTN 4비트 — 같은 예산 | 4.17 | 0.104 | **22.7** |
+| QER 4비트 + r | 5.16 | 0.097 | **21.7** |
+| 분할 4비트 + r (k*) | 5.16 | **0.095** | 22.7 |
+| RTN 5비트 — 같은 예산 | 5.18 | 0.051 | **18.1** |
 
 - **같은 예산에서는 perplexity에서도 "한 비트 더"가 이깁니다.** 4비트 RTN 22.7 대 3비트 + 랭크 80.9/121.1,
   5비트 RTN 18.1 대 4비트 + 랭크 21.7/22.7. 이 크기의 모델에서는 저랭크 항에 1비트를 쓰는 것보다 정수에
@@ -95,7 +97,7 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 - **가중치 오차와 perplexity의 순위가 뒤집힙니다.** 분할이 가중치 오차는 더 낮은데(0.203 대 0.208),
   perplexity는 QER이 훨씬 낫습니다(3비트 80.9 대 121.1, 4비트 21.7 대 22.7). 층 하나씩 실제 활성값 X로 잰
   출력 오차 ‖X(W − Ŵ)ᵀ‖/‖XWᵀ‖ 로도 분할이 QER보다 낮습니다(`scripts/t2_output_error.py`, 층 0·15·29의
-  21개 행렬 중 18개). 즉 **행렬 하나의 오차(가중치든 출력이든)로는 210개 층을 동시에 바꿨을 때의
+  21개 행렬 중 17개, 1개는 k* = 0이라 QER과 같음). 즉 **행렬 하나의 오차(가중치든 출력이든)로는 210개 층을 동시에 바꿨을 때의
   perplexity를 예측할 수 없고**, 층 사이의 누적·전파가 결과를 정합니다 — int8-quant-lab에서 특정 층의
   오차만 뒤쪽 망에서 증폭되던 것과 같은 종류의 현상입니다.
 - **차이는 MLP에서 납니다.** 3비트 QER 대 분할을 층 일부에만 적용하면(`--layers`): 층 0만 17.59 대
@@ -130,9 +132,9 @@ SmolLM2-135M은 층 0·7·15·22·29, TinyLlama-1.1B(3T 기본 체크포인트)�
 | 측정함 | 측정하지 않음 |
 |---|---|
 | 실제 가중치 T1: SmolLM2-135M 층 5개, TinyLlama-1.1B 층 2개, 선형층 7종 × 3·4비트 (98행) | 두 모델의 나머지 층, 더 큰 모델 — TinyLlama는 층 0·11만, k는 8 간격으로 잼 |
-| perplexity T2: SmolLM2-135M, WikiText-2 테스트 분할 **앞 40창 × 1024 토큰**(약 41k 토큰) · 층 출력 오차(실제 활성값 4창, 층 0·15·29) | 테스트 분할 전체(298창), TinyLlama의 perplexity(CPU 시간), 분할의 k를 전수 탐색으로 고른 perplexity |
+| perplexity T2: SmolLM2-135M, WikiText-2 테스트 분할 **앞 40창 × 1024 토큰**(약 41k 토큰) · 층 출력 오차(실제 활성값 4창, 층 0·15·29) | 테스트 분할 전체(297창), TinyLlama의 perplexity(CPU 시간), 분할의 k를 전수 탐색으로 고른 perplexity |
 | 합성 행렬 4종 × 시드 3개, 대리지표의 후회(전수 탐색 대비) | 활성값 스케일 S ≠ I, MXINT 양자화기, 학습(QPEFT, T3), 과제 정확도 |
-| Eckart–Young, k = 0 ↔ QER 일치, 양 끝값, RTN 오차 한계·그룹 독립성, 비트 예산, safetensors 읽기 (테스트 59개) | 지연시간·메모리 — 전부 fake quantization(역양자화한 float)으로 잰 것 |
+| Eckart–Young, k = 0 ↔ QER 일치, 양 끝값, RTN 오차 한계·그룹 독립성, 비트 예산, safetensors 읽기 (테스트 67개) | 지연시간·메모리 — 전부 fake quantization(역양자화한 float)으로 잰 것 |
 
 ## 방법 (기호)
 
@@ -153,7 +155,7 @@ QER     Ŵ = Q + SVD_r(W − Q),  Q = Q_b(W)
 
 ```bash
 pip install -r requirements.txt
-pytest -q                                                            # 59개
+pytest -q                                                            # 67개
 python scripts/t1_summary.py --seeds 0 1 2                           # 합성 행렬 표 (약 3분)
 
 # 실제 가중치 — safetensors 파일을 받아 둔다 (models/ 는 .gitignore)
@@ -161,7 +163,8 @@ mkdir -p models/SmolLM2-135M && curl -L -o models/SmolLM2-135M/model.safetensors
   https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/main/model.safetensors
 python scripts/t1_model_summary.py --file models/SmolLM2-135M/model.safetensors --tag SmolLM2-135M --layers 0 7 15 22 29
 python scripts/t1_model_summary.py --file models/TinyLlama-1.1B-3T/model.safetensors --tag TinyLlama-1.1B --layers 0 11 --k-step 8
-python scripts/t1_layer_curve.py --weight models/TinyLlama-1.1B-3T/model.safetensors:model.layers.0.self_attn.q_proj.weight --k-step 4
+python scripts/t1_layer_curve.py --weight models/TinyLlama-1.1B-3T/model.safetensors:model.layers.0.self_attn.q_proj.weight --k-step 4 --name TinyLlama-1.1B_L0_q_proj
+python scripts/t1_layer_curve.py --weight models/SmolLM2-135M/model.safetensors:model.layers.15.self_attn.q_proj.weight --name SmolLM2-135M_L15_q_proj
 
 # perplexity — torch·transformers·datasets 필요. --model 에는 config·tokenizer까지 받아 둔 디렉터리나 HF 이름
 pip install -r requirements-llm.txt
@@ -188,7 +191,7 @@ scripts/
   t2_perplexity.py      모든 디코더 선형층 + WikiText-2 perplexity (--layers 정규식으로 일부 층만도 가능)
   t2_output_error.py    실제 활성값으로 층 하나의 출력 오차 ‖X(W − Ŵ)ᵀ‖/‖XWᵀ‖
   _common.py            safetensors 읽기(torch 불필요, bf16 포함), 결과 저장
-tests/        59개
+tests/        67개
 results/      t1_*.json, t2_*.json, figures/
 docs/notes.md 논문과 다른 점, 막힌 곳, 관찰, 열린 질문
 ```
@@ -226,7 +229,7 @@ the 3-bit error drops 0.247 → 0.101, below 4-bit RTN at the same budget (0.152
 because the quantization residual is spectrally white. Surrogate regret ≤ 1.9% (SmolLM2) and ≤ 3.9%
 (TinyLlama). At equal bits per weight, plain 4-bit RTN wins everywhere except TinyLlama layer-0 q/k.
 Perplexity (T2, WikiText-2, SmolLM2-135M) is reported in the Korean section above.
-59 tests cover Eckart–Young, k = 0 ↔ QER, RTN error bounds, the bit budget and a torch-free
+67 tests cover Eckart–Young, k = 0 ↔ QER, RTN error bounds, the bit budget and a torch-free
 safetensors reader (bf16 included).
 
 Code and documentation were written by an AI coding assistant (Claude Code) at the author's request;

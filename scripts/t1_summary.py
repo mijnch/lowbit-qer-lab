@@ -36,13 +36,15 @@ def main():
                 w = synth.make(m, n, kind, seed=seed)
                 row = analyse(w, bits, r, a.group, False)
                 from qer.split import rtn_loss
-                row["rtn_same_budget_rel_error"] = rtn_loss(w, bits + int(round(a.extra_bits)), a.group) / np.linalg.norm(w)
+                hi = bits + int(round(a.extra_bits))       # 8비트를 넘으면 같은 예산 RTN 이 없다
+                row["rtn_same_budget_rel_error"] = rtn_loss(w, hi, a.group) / np.linalg.norm(w) if hi <= 8 else None
                 rows.append(row)
             agg = {"kind": kind, "bits": bits, "n_seeds": len(rows)}
             for key in ("rtn", "qer_k0", "split_best", "split_surrogate"):
                 vals = [x["rel_error"][key] for x in rows]
                 agg[key] = {"mean": float(np.mean(vals)), "min": float(min(vals)), "max": float(max(vals))}
-            agg["rtn_same_budget"] = {"mean": float(np.mean([x["rtn_same_budget_rel_error"] for x in rows]))}
+            same = [x["rtn_same_budget_rel_error"] for x in rows if x["rtn_same_budget_rel_error"] is not None]
+            agg["rtn_same_budget"] = {"mean": float(np.mean(same)) if same else None}
             agg["k_best"] = [x["k_best"] for x in rows]
             agg["k_surrogate"] = [x["k_surrogate"] for x in rows]
             agg["surrogate_regret_max"] = float(max(x["surrogate_regret"] for x in rows))
@@ -50,7 +52,9 @@ def main():
             print(f"| {kind} | {bits} | {agg['rtn']['mean']:.4f} | {agg['qer_k0']['mean']:.4f} | "
                   f"{agg['split_best']['mean']:.4f} (k={','.join(map(str, agg['k_best']))}) | "
                   f"{agg['split_surrogate']['mean']:.4f} (k*={','.join(map(str, agg['k_surrogate']))}) | "
-                  f"≤{100 * agg['surrogate_regret_max']:.2f}% | {agg['rtn_same_budget']['mean']:.4f} ({bits + int(round(a.extra_bits))}비트) |")
+                  f"≤{100 * agg['surrogate_regret_max']:.2f}% | "
+                  + (f"{agg['rtn_same_budget']['mean']:.4f} ({bits + int(round(a.extra_bits))}비트) |"
+                     if agg["rtn_same_budget"]["mean"] is not None else "— |"))
     save_json("t1_synthetic_summary.json", out)
 
 

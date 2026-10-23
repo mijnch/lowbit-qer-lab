@@ -1,0 +1,22 @@
+# GitHub 가 이 파일을 읽어 저장소 페이지에 "Cite this repository" 를 띄운다 (Citation File Format 1.2.0).
+cff-version: 1.2.0
+message: "이 저장소를 인용할 때는 아래 정보를 써 주세요. / If you use this software, please cite it as below."
+type: software
+title: "lowbit-qer-lab: 저비트 양자화 오차의 저랭크 복원(W ≈ Q + LR), NumPy 단순화 구현"
+authors:
+  - family-names: Choi
+    given-names: Minjoon
+    email: mijnch@gmail.com
+repository-code: "https://github.com/mijnch/lowbit-qer-lab"
+url: "https://github.com/mijnch/lowbit-qer-lab"
+license: MIT
+keywords:
+  - quantization
+  - low-bit
+  - low-rank
+  - svd
+  - quantization-error-reconstruction
+  - llm
+  - model-compression
+  - numpy
+abstract: "저비트(3·4비트) 가중치 양자화 오차의 저랭크 복원(W ≈ Q + LR)을 NumPy로 단순화해 구현 — RTN·QER·보존-복원 랭크 분할·대리지표. SmolLM2-135M·TinyLlama-1.1B 실제 가중치와 WikiText-2 perplexity로 대조한다. 논문 재현이 아니다."

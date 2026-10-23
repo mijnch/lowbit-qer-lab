@@ -1,5 +1,5 @@
 {
-  "file": "/tmp/claude-0/-home-user/c40bd0fe-47dc-5e7b-91c2-108d8f88030d/scratchpad/models/SmolLM2-135M/model.safetensors",
+  "file": "models/SmolLM2-135M/model.safetensors",
   "tag": "SmolLM2-135M",
   "layers": [
     0,
@@ -27,7 +27,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.24414881892521137,
@@ -57,7 +57,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.11851920365435002,
@@ -87,7 +87,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.23857689886254088,
@@ -117,7 +117,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.11567559038084983,
@@ -147,7 +147,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.24003343860424498,
@@ -177,7 +177,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.11511661493057122,
@@ -207,7 +207,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2750783744149707,
@@ -237,7 +237,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.13033946309540725,
@@ -267,7 +267,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.21809199967881562,
@@ -297,7 +297,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10178317247185417,
@@ -327,7 +327,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.21767082691029185,
@@ -357,7 +357,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10170815158911457,
@@ -447,7 +447,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.226351677841049,
@@ -477,7 +477,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.1057060480266453,
@@ -507,7 +507,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22945548043649047,
@@ -537,7 +537,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.1071441908142136,
@@ -567,7 +567,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22251679737505153,
@@ -597,7 +597,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10400313002836963,
@@ -627,7 +627,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22633257181744054,
@@ -657,7 +657,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.1055256435861789,
@@ -687,7 +687,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2169724053743205,
@@ -717,7 +717,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10127066041839616,
@@ -747,7 +747,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2177197994337968,
@@ -777,7 +777,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10159786267649064,
@@ -867,7 +867,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22639733034280185,
@@ -897,7 +897,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10569397406366715,
@@ -927,7 +927,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22774563197257103,
@@ -957,7 +957,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10655547930315103,
@@ -987,7 +987,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22833787582018256,
@@ -1017,7 +1017,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10677149617701251,
@@ -1047,7 +1047,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.221831467186303,
@@ -1077,7 +1077,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10337795249338488,
@@ -1107,7 +1107,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22523266485872984,
@@ -1137,7 +1137,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10557041865712126,
@@ -1167,7 +1167,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22396241220691884,
@@ -1197,7 +1197,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.1047204099830256,
@@ -1287,7 +1287,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22711083497554574,
@@ -1317,7 +1317,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.105997110315949,
@@ -1347,7 +1347,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2223900911086422,
@@ -1377,7 +1377,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10400816169390312,
@@ -1407,7 +1407,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22929340005492035,
@@ -1437,7 +1437,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10721088250717788,
@@ -1467,7 +1467,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2206196755751405,
@@ -1497,7 +1497,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10306492829964582,
@@ -1527,7 +1527,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22912523262560577,
@@ -1557,7 +1557,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10725777428892913,
@@ -1587,7 +1587,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22398514172722103,
@@ -1617,7 +1617,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.1044907393847337,
@@ -1707,7 +1707,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.23373642129511651,
@@ -1737,7 +1737,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10880626265667369,
@@ -1767,7 +1767,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22878252022611467,
@@ -1797,7 +1797,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10670957257832021,
@@ -1827,7 +1827,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2266148880496431,
@@ -1857,7 +1857,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10599362757265947,
@@ -1887,7 +1887,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.1484375,
+      "bits_per_weight": 4.164930555555555,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.22156461140779532,
@@ -1917,7 +1917,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.15625,
+      "bits_per_weight": 5.173611111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10355655863941046,
@@ -1947,7 +1947,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2217207990581128,
@@ -1977,7 +1977,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.10336304851264766,
@@ -2007,7 +2007,7 @@
       "bits": 3,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 4.141493055555555,
+      "bits_per_weight": 4.157986111111111,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.2176965819479516,
@@ -2037,7 +2037,7 @@
       "bits": 4,
       "group": 128,
       "symmetric": false,
-      "bits_per_weight": 5.149305555555555,
+      "bits_per_weight": 5.166666666666666,
       "k_step": 1,
       "rel_error": {
         "rtn": 0.1017099476202399,
