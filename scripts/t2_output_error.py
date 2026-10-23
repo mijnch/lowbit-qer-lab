@@ -14,7 +14,7 @@ import numpy as np
 
 from _common import save_json, portable_path
 from qer.apply import compress_matrix
-from t2_perplexity import load_model, load_windows, target_linears
+from t2_perplexity import environment, load_model, load_windows, target_linears
 
 
 def main():
@@ -43,7 +43,8 @@ def main():
     for h in hooks:
         h.remove()
 
-    out = {"model": portable_path(a.model), "layers": a.layers, "windows": int(len(windows)), "seq_len": a.seq_len, "rows": []}
+    out = {"model": portable_path(a.model), "layers": a.layers, "windows": int(len(windows)), "seq_len": a.seq_len,
+           "env": environment(), "rows": []}
     print("| 층 | 행렬 | 비트 | 방법 | 가중치 오차 | 출력 오차 | k |")
     for name, mod in linears:
         x = np.concatenate(inputs[name]).astype(np.float64)        # (토큰 수, in)

@@ -84,7 +84,7 @@ def environment():
     """결과 JSON 에 남길 실행 환경. perplexity 는 torch·transformers 판에 따라 달라질 수 있다."""
     import platform
     env = {"python": platform.python_version(), "platform": platform.platform(), "numpy": np.__version__}
-    for name in ("torch", "transformers", "datasets"):
+    for name in ("torch", "transformers", "datasets", "safetensors"):
         try:
             env[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
